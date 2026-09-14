@@ -1,0 +1,72 @@
+{
+  "experiment_id": "E4C1_fwd_capacity",
+  "series": "diagnostic/optimization ladder on E4",
+  "parent_experiment": "E4_compile_time_direction",
+  "parent_platform_runs": [
+    75.92,
+    75.44
+  ],
+  "single_hypothesis": "Large forward shapes lose time to per-task command overhead and burst fragmentation: raising the forward tile budget from 8K to 32K elements (UB permits: forward needs only 2x2B/element) with a wave-balance guard cuts task count 4x and MTE commands 4x on those shapes.",
+  "preceding_simulator_study": "Naive R=8 for mid (S=1024) lost 13% wall in the CA simulator to the 3-vs-2 wave split (T=128 over 48 cores). Hence the balance guard: fat tasks accepted only when tasks >= 8*cores (deep queue, rounding negligible) or <= cores (single wave).",
+  "version_lineage": {
+    "base": "E4_compile_time_direction (snapshots/round2_e4_20260914)",
+    "changed_files": [
+      "op_host/mhc_expand.cpp ONLY"
+    ],
+    "kernel_objects": "bit-identical to E4 (8f874b33/0b17be29)",
+    "source_sha256": {
+      "op_host/mhc_expand.cpp": "5233048461d63f071548fb63f786b16a906efda5eabc94c8c70d4638b0c7f4f0 (was a47bf094...)",
+      "op_kernel/mhc_expand.cpp": "de9e9d14d275ccc200529488be724d97a4b3f068ba0ced3b4eae7a5bc588ff01 (E4 unchanged)"
+    }
+  },
+  "tiling_changes_vs_E4": {
+    "small_and_mid_fwd_bwd": "identical (R=2) - points 1/2/4/5 protected",
+    "large_fwd_S8192_D7168_m8": "R 1->4, T 8192->2048, per-task read 14KB->57KB, forwardBuf 112KB<=UB",
+    "midlarge_fwd_S4096_D4096_m4": "R 2->8, T 2048->512 (deep 10.7 waves, 11/10 split)",
+    "backward_all": "identical (8K budget kept)"
+  },
+  "build": {
+    "cann_version": "8.5.0",
+    "binary": "pass",
+    "install": "pass",
+    "log_path": "mhc_expand_local_test/build_round2_e4c1_fwd_capacity/build.log"
+  },
+  "validation": {
+    "reference": "pass_3_tests_formula_only",
+    "tiling_table_verified": "python replica of host rules across 8 representative shapes"
+  },
+  "platform": {
+    "submission_id": null,
+    "platform_score": 74.39,
+    "correctness": "8_of_8_pass",
+    "times": {
+      "1": "3.66 us",
+      "2": "17.64 us",
+      "3": "1.39 ms",
+      "4": "48.12 us",
+      "5": "3.62 us",
+      "6": "880.44 us",
+      "7": "735.60 us",
+      "8": "1.01 ms"
+    },
+    "model_check": "model predicts 74.36"
+  },
+  "package": {
+    "path": "mhc_expand_local_test/mhc_expand_round2_e4c1_fwd_capacity.zip",
+    "sha256": "0fffabd8f870073dc1645cbef17db0a309fbb7adb10c90cca03479cd696a3bc7",
+    "files": 7
+  },
+  "decision": "no_demonstrated_gain_reverted_to_E4",
+  "readback_rules": "Points 1/2/4/5 must stay in E4 bands (tiling identical). Watch point 3 (large fwd, TBest 1.36ms): >=30us improvement = keep; if mid points regress, the guard threshold needs retuning; if nothing moves, command overhead was hidden under bandwidth.",
+  "paste_checklist": {
+    "op_host/mhc_expand.cpp": [
+      "MUST contain: 32768 (forward budget), BalanceGuard while-loop, GetCoreMemSize",
+      "MUST NOT contain: MIN_BYTES_PER_CORE, bwdGrouped"
+    ],
+    "op_kernel/mhc_expand.cpp": [
+      "MUST contain inQueue_",
+      "MUST NOT contain ProcessBackwardGrouped/MTE2_V"
+    ]
+  },
+  "verdict": "Target point 3 unmoved (1.39ms mid-band): large-forward command overhead is hidden under bandwidth. Point 2 drew 17.64 (above historical band 15.44-16.62) - likely platform-load noise since mid tiling verified identical to E4, but subtle shape-family effects of the balance guard cannot be fully excluded; moot after revert. Point 5 drew its historical best 3.62 (noise). Host reverted to exact E4 bytes."
+}

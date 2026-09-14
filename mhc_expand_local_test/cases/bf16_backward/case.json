@@ -1,0 +1,15 @@
+{
+  "dtype": "bfloat16",
+  "input_shape": [
+    3,
+    4,
+    17
+  ],
+  "output_shape": [
+    3,
+    17
+  ],
+  "mhc_mult": 4,
+  "backward": true,
+  "seed": 0
+}

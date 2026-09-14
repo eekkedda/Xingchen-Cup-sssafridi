@@ -1,0 +1,131 @@
+{
+  "experiment_id": "E1_pipe_entry",
+  "parent_source_sha256": "355e42c14dec6d06e4b2a13d3253ea8c35b84d872702c093cb0ec10cff9dc926",
+  "candidate_source_sha256": "7ea21be52578e76dbc894781f30f5d232ded93996ca8fec282db89d44cfc8471",
+  "single_hypothesis": "Move TPipe ownership to the kernel entry so the compiler can reduce Scalar setup and aliasing overhead.",
+  "changed_mechanism": "TPipe is constructed in mhc_expand and passed by pointer to KernelMhcExpand.",
+  "unchanged_mechanisms": [
+    "host tiling",
+    "dtype keys",
+    "forward and backward mode predicates",
+    "all UB buffer sizes",
+    "DMA calls and offsets",
+    "event dependencies",
+    "backward arithmetic and reduction order"
+  ],
+  "domain_predicate": "all supported FP16/BF16 forward and backward inputs",
+  "fallback": "Round 6 snapshot under snapshots/round2_start_20260913",
+  "build": {
+    "cann_version": "8.5.0",
+    "target": "ascend910b",
+    "binary": "pass",
+    "install": "pass",
+    "log_path": "mhc_expand_local_test/build_round2_e1_pipe_entry/build.log",
+    "objects": {
+      "float16": {
+        "sha256": "d4867602d37d0aa1795544f154b9e7fc617a47b2f32be685782b62b78bf3411c",
+        "text_bytes": 5168,
+        "baseline_text_bytes": 5416
+      },
+      "bfloat16": {
+        "sha256": "77156ed030cefef7a68428bf0db40148e37322fffa752ef8ac9980aae45e215e",
+        "text_bytes": 5168,
+        "baseline_text_bytes": 5416
+      }
+    }
+  },
+  "validation": {
+    "reference": "pass_3_tests_formula_only",
+    "actual_kernel": "small FP16 and BF16 forward/backward objects executed in ca simulator; output not exported",
+    "judge": "pass_8_of_8_platform",
+    "notes": "The user-reported CANNJudge run passed all eight points with zero output error. This validates the submitted platform cases, not every legal input."
+  },
+  "simulator": {
+    "soc_model": "Ascend910B1",
+    "forward_s1_d16_m2": {
+      "baseline_duration": "1.47 us",
+      "candidate_duration": "1.31 us",
+      "baseline_running": "1.16 us",
+      "candidate_running": "1.02 us",
+      "baseline_instruction_calls": 299,
+      "candidate_instruction_calls": 268,
+      "baseline_scalar_calls": 257,
+      "candidate_scalar_calls": 225
+    },
+    "backward_s1_d16_m2": {
+      "baseline_duration": "2.26 us",
+      "candidate_duration": "2.14 us",
+      "baseline_running": "1.66 us",
+      "candidate_running": "1.40 us",
+      "baseline_instruction_calls": 711,
+      "candidate_instruction_calls": 666,
+      "baseline_scalar_calls": 588,
+      "candidate_scalar_calls": 542
+    },
+    "backward_s1_d256_m8": {
+      "baseline_duration": "2.86 us",
+      "candidate_duration": "2.62 us",
+      "baseline_running": "2.50 us",
+      "candidate_running": "2.39 us",
+      "baseline_instruction_calls": 1479,
+      "candidate_instruction_calls": 1464,
+      "baseline_scalar_calls": 1212,
+      "candidate_scalar_calls": 1190
+    },
+    "bfloat16_forward_s1_d16_m2": {
+      "candidate_duration": "1.31 us",
+      "candidate_running": "1.02 us",
+      "execution": "pass"
+    },
+    "bfloat16_backward_s1_d16_m2": {
+      "candidate_duration": "2.14 us",
+      "candidate_running": "1.40 us",
+      "execution": "pass"
+    },
+    "interpretation": "Mechanism signal only; simulator time is not a CANNJudge speedup claim."
+  },
+  "tiling_trace_path": "MhcExpand_Round2/tiling_trace.json",
+  "platform": {
+    "submission_id": null,
+    "platform_score": 74.84,
+    "times": {
+      "1": "3.94 us",
+      "2": "15.74 us",
+      "3": "1.38 ms",
+      "4": "48.44 us",
+      "5": "4.38 us",
+      "6": "887.82 us",
+      "7": "744.44 us",
+      "8": "1.02 ms"
+    },
+    "tbest_at_submission": {
+      "1": "1.36 us",
+      "2": "14.02 us",
+      "3": "1.36 ms",
+      "4": "45.36 us",
+      "5": "1.48 us",
+      "6": "863.88 us",
+      "7": "726.94 us",
+      "8": "995.84 us"
+    },
+    "correctness": "8_of_8_pass_zero_error",
+    "source": "reported_by_user",
+    "nominal_displayed_total_us": 4104.76,
+    "nominal_delta_vs_round6_us": -3.48,
+    "score_formula_diagnostics": {
+      "arithmetic_mean_of_tbest_over_time_percent": 80.2696,
+      "geometric_mean_of_tbest_over_time_percent": 73.8986,
+      "observed_score_matches_neither_exactly": true
+    }
+  },
+  "package": {
+    "path": "mhc_expand_local_test/mhc_expand_round2_e1_pipe_entry.zip",
+    "sha256": "149e013989bbbd90877bed24c8af12242476f49cf73e6dc9c24d10d71b0b4f5b"
+  },
+  "decision": "platform_validated_current_parent_baseline_score_unknown",
+  "limitations": [
+    "Submission ID was not provided",
+    "Round 6 platform score is unavailable, so the E1 score delta is unknown",
+    "Single platform observation; millisecond display values are quantized"
+  ]
+}

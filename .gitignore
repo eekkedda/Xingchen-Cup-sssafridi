@@ -1,0 +1,20 @@
+# 构建产物(可重新生成)
+mhc_expand_local_test/build_*/
+**/build/
+spike_e4/build_*/
+
+# 模拟器大产物与运行目录(脚本可重新生成)
+MhcExpand_Round2/simulator/run_*/
+MhcExpand_Round2/simulator/OPPROF_*/
+MhcExpand_Round2/simulator/profile_*/
+MhcExpand_Round2/simulator/msopt_test_result/
+MhcExpand_Round2/simulator/msopt_e3_result/
+MhcExpand_Round2/simulator/mindstudio_mskpp_gen/
+MhcExpand_Round2/simulator/*.bin
+MhcExpand_Round2/simulator/mskpp_*.log
+
+# Python 与临时文件
+__pycache__/
+*.pyc
+*.log
+.tmp/

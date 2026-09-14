@@ -1,0 +1,33 @@
+{
+  "experiment_id": "D1_core_diet",
+  "series": "platform diagnostic ladder (unlimited submissions era)",
+  "parent_experiment": "E5_bwd_raw_events",
+  "parent_platform_score": 75.16,
+  "single_hypothesis": "Small-shape points (1/5 gap ~2.3us vs field) are partly per-core start/finish synchronization spread: using fewer AIV cores when per-task traffic is tiny cuts kernel wall time.",
+  "horizontal_evidence": "Leaderboard ranks 1-15 all sit at 1.5-2.2us on points 1/5; only the bottom 2-3 teams (incl. us) at 3.6-4.2. This is a conventional-technique gap, not heroics. Reference TileLang impl uses coarse grids (blk_n=32 x blk_h=128 -> few blocks) while our host spreads small shapes across up to 32-48 cores.",
+  "changed_mechanism": [
+    "host-only: when bytes-per-task (tileLength*rowBlock*(m+1)*2) < 8KB, blockDim = min(previous, ceil(totalBytes/8KB), >=1); kernel binary untouched (identical objects to E5)"
+  ],
+  "expected_tiling_changes": {
+    "S64_D256_m2": "32 cores -> 12 cores (each 2-3 tasks)",
+    "S1_small": "unchanged (already 1 core)",
+    "mid_S1024_D4096_m4": "unchanged 48 (bytes/task 82KB)",
+    "large": "unchanged 48"
+  },
+  "build": {
+    "cann_version": "8.5.0", "binary": "pass", "install": "pass",
+    "log_path": "mhc_expand_local_test/build_round2_d1_core_diet/build.log",
+    "source_sha256": {"op_host/mhc_expand.cpp": "de626a77006fbac605a77e85d20e9386973f080ff52ea38f7047c948779669bb"},
+    "kernel_objects": "identical to E5 (4 kernels, host-only change)"
+  },
+  "validation": {"reference": "pass_3_tests_formula_only", "correctness": "loop partition task = blockIdx + k*blockDim is a disjoint exact cover for any blockDim>=1; simulator bins unchanged (tiling-time change only)"},
+  "platform": {"submission_id": null, "platform_score": null, "times": null, "tbest_at_submission": null},
+  "package": {
+    "path": "mhc_expand_local_test/mhc_expand_round2_d1_core_diet.zip",
+    "sha256": "f6305a62ba57d481308a5e35b456dcabe8c5836eaf1f60c2fdcb5dc6bd32dea5",
+    "files": 7
+  },
+  "decision": "platform_test_candidate",
+  "readback_rules": "Point 1 drops >=0.5us -> hypothesis confirmed, tune quantum (16KB variant next). Point 1 unchanged -> core spread is not the cost; revert to E5 host and proceed to D2. Point 1 worse by >0.3us -> refuted strongly, revert.",
+  "note": "This submission also restores the leaderboard standing after E6's voided 48.23 (kernel objects identical to E5's 75.16-passing run)."
+}

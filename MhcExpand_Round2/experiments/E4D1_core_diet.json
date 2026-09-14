@@ -1,0 +1,96 @@
+{
+  "experiment_id": "E4D1_core_diet",
+  "series": "platform diagnostic ladder, rebased on E4 after judge environment change",
+  "parent_experiment": "E4_compile_time_direction",
+  "parent_platform_runs": [
+    75.92,
+    75.44
+  ],
+  "single_hypothesis": "Small-shape points 1/5 (field at 1.5-2.2us, we at 3.6-4.4) are partly per-core start/finish synchronization spread: fewer AIV cores for tiny workloads cuts kernel wall time.",
+  "version_lineage": {
+    "base": "E4_compile_time_direction (snapshots/round2_e4_20260914)",
+    "changed_files": [
+      "op_host/mhc_expand.cpp ONLY"
+    ],
+    "unchanged_files": [
+      "CMakeLists.txt",
+      "op_host/CMakeLists.txt",
+      "op_kernel/CMakeLists.txt",
+      "op_kernel/mhc_expand.cpp",
+      "op_kernel/mhc_expand_tiling.h",
+      "op_kernel/tiling_key_mhc_expand.h"
+    ],
+    "kernel_objects": "bit-identical to E4 build (float16 8f874b33..., bfloat16 0b17be29...) - host-only change proven at binary level",
+    "source_sha256": {
+      "op_host/mhc_expand.cpp": "de626a77006fbac605a77e85d20e9386973f080ff52ea38f7047c948779669bb (was a47bf094...)",
+      "op_kernel/mhc_expand.cpp": "de9e9d14d275ccc200529488be724d97a4b3f068ba0ced3b4eae7a5bc588ff01 (E4 unchanged)",
+      "op_kernel/mhc_expand_tiling.h": "5b7602067b4f9f2153948fa8b88c0841bf30116543bc71539796c1f5529525bd (E4 unchanged)",
+      "op_kernel/tiling_key_mhc_expand.h": "686a8c31dd35922df4374d6ea2ce3093ab568d19ffc3a49623354faeb9e0413f (E4 unchanged)"
+    }
+  },
+  "changed_mechanism": [
+    "host-only: when bytes-per-task (tileLength*rowBlock*(m+1)*2) < 8KB, blockDim = min(previous, ceil(totalBytes/8KB)) with floor 1; kernel binary untouched"
+  ],
+  "expected_tiling_changes": {
+    "S64_D256_m2_like": "32 cores -> 12 cores",
+    "T<=cores_small": "unchanged",
+    "mid_large": "unchanged 48 (bytes/task >= 40KB)"
+  },
+  "why_safe_on_current_judge": "Backward remains E4 TQue path (portable); forward unchanged since Round 6; no raw V-pipe events anywhere; diet only changes blockDim integer.",
+  "build": {
+    "cann_version": "8.5.0",
+    "binary": "pass",
+    "install": "pass",
+    "log_path": "mhc_expand_local_test/build_round2_e4d1_core_diet/build.log"
+  },
+  "validation": {
+    "reference": "pass_3_tests_formula_only"
+  },
+  "platform": {
+    "submission_id": null,
+    "platform_score": 74.28,
+    "correctness": "8_of_8_pass",
+    "times": {
+      "1": "3.66 us",
+      "2": "16.46 us",
+      "3": "1.40 ms",
+      "4": "48.78 us",
+      "5": "4.24 us",
+      "6": "881.98 us",
+      "7": "743.50 us",
+      "8": "1.01 ms"
+    },
+    "tbest_at_submission": {
+      "1": "1.36 us",
+      "2": "14.02 us",
+      "3": "1.36 ms",
+      "4": "45.36 us",
+      "5": "1.48 us",
+      "6": "863.88 us",
+      "7": "726.94 us",
+      "8": "995.84 us"
+    },
+    "model_check": "model predicts 74.25"
+  },
+  "package": {
+    "path": "mhc_expand_local_test/mhc_expand_round2_e4d1_core_diet.zip",
+    "sha256": "8eeab338981d023bc48d09c2c08abab46597e1080fb673ae5f670b252759e3cc",
+    "files": 7
+  },
+  "decision": "hypothesis_refuted_rolled_back_to_E4",
+  "readback_rules": "point1 ->=0.5us vs E4 band(3.56-3.94): confirmed, tune quantum. unchanged: proceed E4D1f (fat-task R cap relaxation). worse >0.3us: revert host to E4 snapshot, proceed E4D1f.",
+  "paste_checklist": {
+    "op_host/mhc_expand.cpp": [
+      "MUST contain MIN_BYTES_PER_CORE",
+      "MUST NOT contain bwdGrouped"
+    ],
+    "op_kernel/mhc_expand.cpp": [
+      "MUST contain inQueue_ (TQue backward)",
+      "MUST NOT contain ProcessBackwardGrouped or MTE2_V"
+    ],
+    "op_kernel/mhc_expand_tiling.h": [
+      "MUST NOT contain bwdGrouped"
+    ]
+  },
+  "verdict": "Point 1 at 12 cores == point 1 at 32 cores (3.66 vs band 3.56-3.94): core-count/scheduling spread is NOT the small-point gap. Score 74.28 is a low draw of the family noise band. Host reverted to exact E4 bytes."
+}

@@ -1,0 +1,151 @@
+{
+  "experiment_id": "E4_compile_time_direction",
+  "parent_experiment": "E2_on_E1_fp16_mixed_axpy",
+  "parent_source_sha256": {
+    "op_host/mhc_expand.cpp": "136f1aa4986078aa6355e937afadb0db2b04adb0a2b461ea528feb9ea7557653",
+    "op_kernel/mhc_expand.cpp": "09083b1e3980db96b04d2c655754a91bb08a2e3338fd2b420540f09b44987187",
+    "op_kernel/mhc_expand_tiling.h": "5b7602067b4f9f2153948fa8b88c0841bf30116543bc71539796c1f5529525bd",
+    "op_kernel/tiling_key_mhc_expand.h": "c9c7f918aade1322cbb7d6d1a65c01f837a8ee52a59290d227d20b3d41bfdab0"
+  },
+  "parent_platform_score_runs": [
+    76.05,
+    74.86
+  ],
+  "parent_snapshot": "MhcExpand_Round2/snapshots/round2_e2_on_e1_20260914",
+  "single_hypothesis": "Making the backward attribute a compile-time template argument (4 kernel objects instead of 2) removes the unused direction's Init/Process code from every object, reducing fixed Scalar overhead on small-workload points without touching DMA, events, or numerics.",
+  "changed_mechanism": [
+    "tiling_key_mhc_expand.h: ASCENDC_TPL_BOOL_DECL(IS_BACKWARD, 0, 1) added; each dtype SEL entry expands over both bool values (sparse_lightning-style multi-value BOOL_SEL), verified by spike to generate 4 kernels with keys 1/257/27/283",
+    "op_host: ASCENDC_TPL_SEL_PARAM(context, DT_X, IS_BACKWARD) passes the backward attr into the tiling key; tiling struct and all host tiling policy unchanged (40-byte ABI kept)",
+    "op_kernel: entry and class take <DT_X, int IS_BACKWARD> (official built-in convention passes BOOL as int); all runtime backward_ branches become if constexpr on kBackward_; kernel no longer loads tiling.backward"
+  ],
+  "unchanged_mechanisms": [
+    "E2 FP16 backward mixed Axpy arithmetic and replica order",
+    "BF16 backward Cast+Add and all InitBuffer sizes/order",
+    "forward single-pass / ping-pong split and event protocol",
+    "backward TQue usage and vector barriers",
+    "DMA calls, offsets, parameters, padding",
+    "host tiling policy and 40-byte tiling struct"
+  ],
+  "domain_predicate": "all supported FP16/BF16 forward and backward inputs; host tiling key always matches the backward attr",
+  "fallback": "snapshots/round2_e2_on_e1_20260914 plus zip mhc_expand_round2_e2_on_e1.zip",
+  "spike_note": "spike_e4/ holds the de-risk build. IMPORTANT lesson: compile_cann85.sh resolves the project as <script_dir>/../B_easy, so a scratch project must sit at <parent>/B_easy with the script inside <parent>/<any subdir>; otherwise the ORIGINAL B_easy is silently compiled and the spike proves nothing.",
+  "build": {
+    "cann_version": "8.5.0",
+    "target": "ascend910b",
+    "binary": "pass",
+    "install": "pass",
+    "log_path": "mhc_expand_local_test/build_round2_e4_compile_time_direction/build.log",
+    "source_sha256": {
+      "op_host/mhc_expand.cpp": "a47bf094ffab89e3572e3c6440e96367316c416b8301221dc9b34ffb7d405f09",
+      "op_kernel/mhc_expand.cpp": "de9e9d14d275ccc200529488be724d97a4b3f068ba0ced3b4eae7a5bc588ff01",
+      "op_kernel/mhc_expand_tiling.h": "5b7602067b4f9f2153948fa8b88c0841bf30116543bc71539796c1f5529525bd",
+      "op_kernel/tiling_key_mhc_expand.h": "686a8c31dd35922df4374d6ea2ce3093ab568d19ffc3a49623354faeb9e0413f"
+    },
+    "objects": {
+      "float16_o": "8f874b33... (contains kernels _1 forward and _257 backward)",
+      "bfloat16_o": "0b17be29... (contains kernels _27 forward and _283 backward)",
+      "kernel_text_bytes": {
+        "fp16_forward_key1": 2480,
+        "fp16_backward_key257": 3496,
+        "bf16_forward_key27": 2480,
+        "bf16_backward_key283": 3552,
+        "parent_single_kernel_text": 5112
+      }
+    },
+    "notes": "Forward kernel text halves (5112 -> 2480); backward drops ~32%. Per-kernel sizes from nm -S."
+  },
+  "validation": {
+    "reference": "pass_3_tests_formula_only",
+    "actual_kernel": "5 CA-simulator cases (fp16/bf16 x fwd/bwd small + fp16 bwd m8), each dispatched to its direction-specific kernel via the correct tiling-key suffix in the config; all executed cleanly (no tiling-size or load errors)",
+    "equivalence_audit": "Pure dead-code elimination: per direction the executed instruction sequence is the same as the parent's taken branch, minus the runtime direction test, the tiling.backward load, and the input/output length ternary selects. No DMA parameter, event, or arithmetic change.",
+    "judge": "not_submitted"
+  },
+  "simulator": {
+    "soc_model": "Ascend910B1",
+    "comparison_vs_E2_on_E1": {
+      "fp16_forward_s1_d16_m2": {
+        "parent_calls": 268,
+        "candidate_calls": 252,
+        "delta_percent": -6.0,
+        "scalar": "225->212"
+      },
+      "fp16_backward_s1_d16_m2": {
+        "parent_calls": 657,
+        "candidate_calls": 637,
+        "delta_percent": -3.0,
+        "scalar": "534->516"
+      },
+      "fp16_backward_s1_d256_m8": {
+        "parent_calls": 1425,
+        "candidate_calls": 1387,
+        "delta_percent": -2.7,
+        "scalar": "1164->1134"
+      }
+    },
+    "candidate_only": {
+      "bfloat16_forward_s1_d16_m2": {
+        "calls": 252,
+        "scalar": 212
+      },
+      "bfloat16_backward_s1_d16_m2": {
+        "calls": 648,
+        "scalar": 525
+      }
+    },
+    "interpretation": "Unlike rejected E3, every direction improves: forward -6.0% (E3 was +9.3%), backward -2.7~-3.0%. Instruction-count deltas are modest; expected platform effect is likely near the measured noise band (+-1.2), so the submission primarily validates direction and builds the 4-object infrastructure for E5."
+  },
+  "platform": {
+    "submission_id": null,
+    "platform_score": 75.92,
+    "correctness": "8_of_8_pass_zero_error",
+    "times": {
+      "1": "3.56 us",
+      "2": "15.78 us",
+      "3": "1.39 ms",
+      "4": "46.86 us",
+      "5": "3.68 us",
+      "6": "890.96 us",
+      "7": "747.32 us",
+      "8": "1.02 ms"
+    },
+    "tbest_at_submission": {
+      "1": "1.36 us",
+      "2": "14.02 us",
+      "3": "1.36 ms",
+      "4": "45.36 us",
+      "5": "1.48 us",
+      "6": "863.88 us",
+      "7": "726.94 us",
+      "8": "995.84 us"
+    },
+    "source": "reported_by_user",
+    "model_check": "model predicts 75.89 from displayed times (a=2.444), matches 75.92"
+  },
+  "package": {
+    "path": "mhc_expand_local_test/mhc_expand_round2_e4_compile_time_direction.zip",
+    "sha256": "2bd1ff4ebdb37d7feea2d2be71d663a1f87ba4c0b56995637ae0aba854fe608a",
+    "files": 7
+  },
+  "decision": "kept_as_new_base_in_noise_band_points_1_4_5_best_ever",
+  "limitations": [
+    "Expected platform effect may be within the +-1.2 noise band; treat single-run score deltas below that as inconclusive",
+    "No actual-kernel golden comparison outside CANNJudge",
+    "Hidden point dtype/direction mapping unknown",
+    "Single platform observation; in-band result kept per pre-registered rule (dead-code-only change cannot regress mechanically)"
+  ],
+  "rerun_after_env_change": {
+    "platform_score": 75.44,
+    "times": {
+      "1": "3.82 us",
+      "2": "15.60 us",
+      "3": "1.40 ms",
+      "4": "48.26 us",
+      "5": "4.04 us",
+      "6": "882.44 us",
+      "7": "741.62 us",
+      "8": "1.01 ms"
+    },
+    "model_check": "model predicts 75.49"
+  },
+  "platform_env_change_finding": "Between E5 pass (75.16) and the next day: judge environment changed (or per-node variance). E5/E6 raw MTE2_V-family backward events now hang (TLE 4/5/8, deterministic, 2 submissions); E4 TQue backward and an old-generation version (pass_0914_061008) pass. RAW V-PIPE EVENTS ARE NOT PORTABLE ACROSS JUDGE ENVIRONMENTS - TQue and MTE2_MTE3/MTE3_MTE2 (forward, since Round 6) are portable. E4 is the new base."
+}

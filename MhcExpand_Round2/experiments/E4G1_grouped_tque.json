@@ -1,0 +1,134 @@
+{
+  "experiment_id": "E4G1_grouped_tque",
+  "series": "plan-D revival on the portable E4 TQue base after judge environment change",
+  "parent_experiment": "E4_compile_time_direction",
+  "parent_platform_runs": [
+    75.92,
+    75.44,
+    74.87
+  ],
+  "single_hypothesis": "Reading each token's m contiguous GM streams with ONE 2D-block DMA into a TQue slot (grouped backward, rowBlock=1 keeps replica slices contiguous and 16-aligned) cuts backward per-token command count from m+1 to 2 on mid shapes; built ONLY from constructs proven passing on the current judge (TQue cadence + 2D DataCopyParams block form; no raw V-pipe events, no count-form copies).",
+  "e6_postmortem_fix": "E6's TLE candidates (count-form large DataCopy, raw MTE2_V set/wait) are both eliminated: grouped read uses the 2D block form {1, m*D/16, 0, 0} and the queue cadence is plain TQue Alloc/EnQue/DeQue/Free identical to E4's passing backward.",
+  "version_lineage": {
+    "base": "E4_compile_time_direction (snapshots/round2_e4_20260914)",
+    "changed_files": [
+      "op_host/mhc_expand.cpp",
+      "op_kernel/mhc_expand.cpp",
+      "op_kernel/mhc_expand_tiling.h"
+    ],
+    "unchanged_files": [
+      "CMakeLists.txt",
+      "op_host/CMakeLists.txt",
+      "op_kernel/CMakeLists.txt",
+      "op_kernel/tiling_key_mhc_expand.h"
+    ],
+    "source_sha256": {
+      "op_host/mhc_expand.cpp": "bd175cf960f106d301076f3ff7d0a9b9bd20617417947036aaecc96d72d29b44 (was a47bf094...)",
+      "op_kernel/mhc_expand.cpp": "e311adc9e2a0154dae8799957270370f574d675c228547ba3a78d3f7161e606c (was de9e9d14...)",
+      "op_kernel/mhc_expand_tiling.h": "be0535210802aa76919f445e4e10960bc2c2fa2787796446879451a9eacaa6a3 (was 5b760206...; bwdGrouped occupies former padding, still 40 bytes)"
+    }
+  },
+  "changed_mechanism": [
+    "host: grouped feasibility (backward && tilesPerRow==1 && d%16==0 && 2*m*D*2B + acc + out + staging <= queried UB) -> rowBlock=1, bwdGrouped flag in tiling padding slot",
+    "kernel: ProcessBackwardGrouped - per token one TQue Alloc + 2D-block DataCopy {1, m*D/16, 0, 0} + EnQue/DeQue; Cast replica 0 then Axpy (FP16) / Cast+Add (BF16) on contiguous [k*D] offsets; FreeTensor; output via outQueue exactly like the regular path",
+    "fallback: any non-eligible backward (non-aligned D, D>8192, m=8/D=7168 family) keeps the E4 path verbatim; forward untouched"
+  ],
+  "build": {
+    "cann_version": "8.5.0",
+    "binary": "pass",
+    "install": "pass",
+    "log_path": "mhc_expand_local_test/build_round2_e4g1_grouped_tque/build.log"
+  },
+  "simulator": {
+    "mid_S1024_D4096_M4_48cores": {
+      "grouped_wall_us": 10.439,
+      "ungrouped_wall_us": 11.354,
+      "delta_percent": -8.1,
+      "imbalance": "1.052 vs 1.135"
+    },
+    "instruction_calls_vs_E4": {
+      "fp16_bwd_small_grouped": {
+        "e4": 637,
+        "g1": 476,
+        "delta": -25
+      },
+      "fp16_bwd_m8_grouped": {
+        "e4": 1387,
+        "g1": 614,
+        "delta": -56
+      },
+      "fp16_fwd_small": {
+        "e4": 252,
+        "g1": 252,
+        "delta": 0
+      }
+    },
+    "clean_cases": [
+      "small grouped FP16/BF16",
+      "m8 grouped",
+      "D17 fallback",
+      "forward small"
+    ]
+  },
+  "validation": {
+    "reference": "pass_3_tests_formula_only"
+  },
+  "platform": {
+    "submission_id": null,
+    "platform_score": 74.96,
+    "correctness": "8_of_8_pass",
+    "times": {
+      "1": "3.74 us",
+      "2": "16.28 us",
+      "3": "1.40 ms",
+      "4": "46.74 us",
+      "5": "4.28 us",
+      "6": "888.28 us",
+      "7": "744.12 us",
+      "8": "1.02 ms"
+    },
+    "tbest_at_submission": {
+      "1": "1.36 us",
+      "2": "14.02 us",
+      "3": "1.36 ms",
+      "4": "45.36 us",
+      "5": "1.48 us",
+      "6": "863.88 us",
+      "7": "726.94 us",
+      "8": "995.84 us"
+    },
+    "model_check": "model predicts 75.16 from displayed times (0.2 gap from ms rounding)"
+  },
+  "package": {
+    "path": "mhc_expand_local_test/mhc_expand_round2_e4g1_grouped_tque.zip",
+    "sha256": "7948b569c93c358e23662d34932ab288dbb96b82fdaa46f2f0a8c69509b996a1",
+    "files": 7
+  },
+  "decision": "passed_8_of_8_grouped_concept_validated_keep_as_harvest_base",
+  "readback_rules": "If points 4/5/8 TLE again: grouped concept itself is incompatible with the judge (not the constructs) - abandon permanently and resubmit E4 (zip 2bd1ff4e...). If 8/8: expect point 4 (and any grouped-eligible backward mid) -2~-8%; points 1/2/3 must stay in bands (forward and non-eligible paths unchanged).",
+  "paste_checklist": {
+    "op_host/mhc_expand.cpp": [
+      "MUST contain: bwdGrouped (feasibility block), GetCoreMemSize",
+      "MUST NOT contain: MIN_BYTES_PER_CORE"
+    ],
+    "op_kernel/mhc_expand.cpp": [
+      "MUST contain: ProcessBackwardGrouped, inQueue_ (TQue kept)",
+      "MUST NOT contain: MTE2_V (raw V events banned)"
+    ],
+    "op_kernel/mhc_expand_tiling.h": [
+      "MUST contain: uint32_t bwdGrouped; static_assert 40 bytes"
+    ]
+  },
+  "key_findings": [
+    "E6 root cause CLOSED: grouped backward passes on the judge when built from portable constructs; the fatal ingredients were count-form large DataCopy and/or raw MTE2_V-family events",
+    "Point 4 drew its historical best 46.74us (band 46.86-49.00), directionally consistent with the -8.1% simulator gain if point 4 is a grouped-eligible backward mid",
+    "Point 5 at 4.28us confirms (third independent line of evidence) that small backward is latency-bound, not instruction-bound",
+    "Score 74.96 within family noise; E4G1 >= E4 mechanically (forward byte-identical, non-eligible paths identical, eligible path strictly fewer commands)"
+  ],
+  "portable_constructs_list": {
+    "TQue_AEF_cadence": "PROVEN (E4, old-gen, E4G1)",
+    "2D_DataCopyParams_block_form": "PROVEN (all passing versions)",
+    "count_form_large_copy": "FATAL (E6)",
+    "raw_MTE2_V_family_events": "FATAL on current judge (E5/E6)"
+  }
+}

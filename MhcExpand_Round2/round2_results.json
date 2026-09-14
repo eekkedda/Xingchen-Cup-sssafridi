@@ -1,0 +1,268 @@
+{
+  "schema": 1,
+  "objective": {
+    "primary": "actual platform score with correctness",
+    "required_context": [
+      "submission_id",
+      "eight raw time strings",
+      "TBest shown at submission time",
+      "source/package sha256"
+    ],
+    "diagnostic_only": [
+      "sum of eight displayed times",
+      "relative-to-TBest ratios",
+      "simulator duration"
+    ],
+    "unknowns": "The official per-test scoring formula is not confirmed; do not assume equal weights, arithmetic mean, or geometric mean."
+  },
+  "baseline": {
+    "name": "Round6",
+    "source": "MhcExpand_Round2/历史跑分.json",
+    "submission_id": null,
+    "platform_score": null,
+    "times": {
+      "1": "3.90 us",
+      "2": "16.62 us",
+      "3": "1.40 ms",
+      "4": "50.60 us",
+      "5": "3.68 us",
+      "6": "881.10 us",
+      "7": "742.34 us",
+      "8": "1.01 ms"
+    },
+    "status": "historical_single_observation_8_of_8_pass"
+  },
+  "experiments": [
+    {
+      "experiment_id": "E1_pipe_entry",
+      "record": "MhcExpand_Round2/experiments/E1_pipe_entry.json",
+      "submission_id": null,
+      "platform_score": 74.84,
+      "times": {
+        "1": "3.94 us",
+        "2": "15.74 us",
+        "3": "1.38 ms",
+        "4": "48.44 us",
+        "5": "4.38 us",
+        "6": "887.82 us",
+        "7": "744.44 us",
+        "8": "1.02 ms"
+      },
+      "status": "platform_8_of_8_pass_score_74_84"
+    },
+    {
+      "experiment_id": "E2_fp16_mixed_axpy",
+      "record": "MhcExpand_Round2/experiments/E2_fp16_mixed_axpy.json",
+      "submission_id": null,
+      "platform_score": null,
+      "times": null,
+      "status": "built_and_simulated_held_isolated"
+    },
+    {
+      "experiment_id": "E2_on_E1_fp16_mixed_axpy",
+      "record": "MhcExpand_Round2/experiments/E2_on_E1_fp16_mixed_axpy.json",
+      "parent_platform_score": 74.84,
+      "submission_id": null,
+      "platform_score": 76.05,
+      "times": {
+        "1": "4.06 us",
+        "2": "15.48 us",
+        "3": "1.38 ms",
+        "4": "47.80 us",
+        "5": "3.88 us",
+        "6": "889.14 us",
+        "7": "742.22 us",
+        "8": "1.01 ms"
+      },
+      "status": "platform_76_05_and_identical_resubmit_74_86_noise_measured",
+      "note": "Most plausibly the 2026/09/13 20:51:33 leaderboard submission scored 76.05 (per 算子性能评分分析与优化优先级报告.md); link not yet confirmed by submission ID.",
+      "repeat_runs": [
+        {
+          "platform_score": 76.05,
+          "times": {
+            "1": "4.06 us",
+            "2": "15.48 us",
+            "3": "1.38 ms",
+            "4": "47.80 us",
+            "5": "3.88 us",
+            "6": "889.14 us",
+            "7": "742.22 us",
+            "8": "1.01 ms"
+          }
+        },
+        {
+          "platform_score": 74.86,
+          "times": {
+            "1": "3.80 us",
+            "2": "16.16 us",
+            "3": "1.39 ms",
+            "4": "48.24 us",
+            "5": "3.88 us",
+            "6": "895.46 us",
+            "7": "737.22 us",
+            "8": "1.01 ms"
+          }
+        }
+      ]
+    },
+    {
+      "experiment_id": "E3_scalar_hoist",
+      "record": "MhcExpand_Round2/experiments/E3_scalar_hoist.json",
+      "parent_experiment": "E2_on_E1_fp16_mixed_axpy",
+      "parent_platform_score": null,
+      "submission_id": null,
+      "platform_score": 73.94,
+      "times": {
+        "1": "4.22 us",
+        "2": "16.46 us",
+        "3": "1.40 ms",
+        "4": "49.00 us",
+        "5": "3.68 us",
+        "6": "887.12 us",
+        "7": "745.44 us",
+        "8": "1.01 ms"
+      },
+      "status": "platform_8_of_8_pass_score_73_94_rejected_rolled_back",
+      "changed_mechanism": "Host passes precomputed tilesPerRow/taskCount; kernel adds a general single-tile-per-row fast path (D<=tileLength) with precomputed aligned DataCopyParams; FP16 backward skips the unused FP32 staging InitBuffer",
+      "package": "mhc_expand_local_test/mhc_expand_round2_e3_scalar_hoist.zip (sha256 55deed577fcceb9313f5b18b1d1b9a471e18211f50aec52c31f6d19cb99c377e)"
+    },
+    {
+      "experiment_id": "E4_compile_time_direction",
+      "record": "MhcExpand_Round2/experiments/E4_compile_time_direction.json",
+      "parent_experiment": "E2_on_E1_fp16_mixed_axpy",
+      "parent_platform_score_runs": [
+        76.05,
+        74.86
+      ],
+      "submission_id": null,
+      "platform_score": null,
+      "times": null,
+      "status": "built_and_simulated_waiting_for_platform",
+      "changed_mechanism": "backward attr becomes a compile-time BOOL template arg; 4 direction-specific kernels (keys 1/257/27/283); pure dead-code elimination, DMA/events/numerics unchanged",
+      "package": "mhc_expand_local_test/mhc_expand_round2_e4_compile_time_direction.zip (sha256 2bd1ff4ebdb37d7feea2d2be71d663a1f87ba4c0b56995637ae0aba854fe608a)"
+    },
+    {
+      "experiment_id": "E5_bwd_raw_events",
+      "record": "MhcExpand_Round2/experiments/E5_bwd_raw_events.json",
+      "parent_experiment": "E4_compile_time_direction",
+      "parent_platform_score": 75.92,
+      "submission_id": null,
+      "platform_score": null,
+      "times": null,
+      "status": "built_and_simulated_waiting_for_platform",
+      "changed_mechanism": "backward TQue -> raw double-buffered input + explicit MTE2_V/V_MTE2/V_MTE3/MTE3_V events; forward byte-identical to E4; simulator: backward -27.5%/-33.8% instructions, forward 0.0%",
+      "package": "mhc_expand_local_test/mhc_expand_round2_e5_bwd_raw_events.zip (sha256 dcec0c68d6c799561fe5bb32016caec8c0822583e24dfb46575d857cc24a93c7)"
+    },
+    {
+      "experiment_id": "E6_bwd_grouped",
+      "record": "MhcExpand_Round2/experiments/E6_bwd_grouped.json",
+      "parent_experiment": "E5_bwd_raw_events",
+      "parent_platform_score": 75.16,
+      "submission_id": null,
+      "platform_score": null,
+      "times": null,
+      "status": "built_and_simulated_waiting_for_platform",
+      "changed_mechanism": "backward grouped read (plan D, R=1 contiguity): one DMA per m*D token block; sim mid wall -5.3%, small bwd instr -21%~-46%, forward 0.0%",
+      "package": "mhc_expand_local_test/mhc_expand_round2_e6_bwd_grouped.zip (sha256 e4ec6a5de28cb25b326aeb6d58e9c9ef05eb81bdeeeba37338c61eabe84c464d)"
+    },
+    {
+      "experiment_id": "D1_core_diet",
+      "series": "platform_diagnostic_ladder",
+      "record": "MhcExpand_Round2/experiments/D1_core_diet.json",
+      "parent_experiment": "E5_bwd_raw_events",
+      "parent_platform_score": 75.16,
+      "submission_id": null,
+      "platform_score": null,
+      "times": null,
+      "status": "built_waiting_for_platform",
+      "changed_mechanism": "host-only core diet: blockDim reduced for tiny per-task traffic (<8KB/task -> >=8KB/core); kernel objects identical to E5",
+      "package": "mhc_expand_local_test/mhc_expand_round2_d1_core_diet.zip (sha256 f6305a62ba57d481308a5e35b456dcabe8c5836eaf1f60c2fdcb5dc6bd32dea5)"
+    },
+    {
+      "experiment_id": "E4D1_core_diet",
+      "series": "diagnostic_ladder_on_E4",
+      "record": "MhcExpand_Round2/experiments/E4D1_core_diet.json",
+      "parent_experiment": "E4_compile_time_direction",
+      "parent_platform_runs": [
+        75.92,
+        75.44
+      ],
+      "submission_id": null,
+      "platform_score": null,
+      "times": null,
+      "status": "built_waiting_for_platform",
+      "changed_mechanism": "E4 + host-only core diet (<8KB/task -> >=8KB/core); kernel objects bit-identical to E4",
+      "package": "mhc_expand_local_test/mhc_expand_round2_e4d1_core_diet.zip (sha256 8eeab338981d023bc48d09c2c08abab46597e1080fb673ae5f670b252759e3cc)"
+    },
+    {
+      "experiment_id": "E4C1_fwd_capacity",
+      "series": "ladder_on_E4",
+      "record": "MhcExpand_Round2/experiments/E4C1_fwd_capacity.json",
+      "parent_experiment": "E4_compile_time_direction",
+      "parent_platform_runs": [
+        75.92,
+        75.44
+      ],
+      "submission_id": null,
+      "platform_score": null,
+      "times": null,
+      "status": "built_waiting_for_platform",
+      "changed_mechanism": "E4 + host-only: forward tile budget 8K->32K (UB-checked) with wave-balance guard; kernel objects bit-identical to E4; large-fwd tasks 8192->2048",
+      "package": "mhc_expand_local_test/mhc_expand_round2_e4c1_fwd_capacity.zip (sha256 0fffabd8f870073dc1645cbef17db0a309fbb7adb10c90cca03479cd696a3bc7)"
+    },
+    {
+      "experiment_id": "E4G1_grouped_tque",
+      "record": "MhcExpand_Round2/experiments/E4G1_grouped_tque.json",
+      "parent_experiment": "E4_compile_time_direction",
+      "parent_platform_runs": [
+        75.92,
+        75.44,
+        74.87
+      ],
+      "submission_id": null,
+      "platform_score": null,
+      "times": null,
+      "status": "built_and_simulated_waiting_for_platform",
+      "changed_mechanism": "E4 + grouped backward read via TQue slots + 2D-block form only (E6 postmortem fixes both suspects); sim: mid wall -8.1%, m8 instr -56%",
+      "package": "mhc_expand_local_test/mhc_expand_round2_e4g1_grouped_tque.zip (sha256 7948b569c93c358e23662d34932ab288dbb96b82fdaa46f2f0a8c69509b996a1)"
+    },
+    {
+      "experiment_id": "E4G2_pair_grouped",
+      "record": "MhcExpand_Round2/experiments/E4G2_pair_grouped.json",
+      "parent_experiment": "E4G1_grouped_tque",
+      "parent_platform_score": 74.96,
+      "submission_id": null,
+      "platform_score": null,
+      "times": null,
+      "status": "built_and_simulated_waiting_for_platform",
+      "changed_mechanism": "E4G1 + pair grouping (G=2) for large-D backward when full-m block exceeds UB; sim -21.5% wall at (512,5120,8)",
+      "package": "mhc_expand_local_test/mhc_expand_round2_e4g2_pair_grouped.zip (sha256 aea1f45a7c314470c0e1fa9d5b1781a6d26bb53d3464f729c425f026f8b8f2ed)"
+    }
+  ],
+  "recommended_next_step": {
+    "candidate": "E4G2_pair_grouped (submit after/instead of harvesting E4G1 draws)",
+    "recovery_zips": {
+      "E4G1": "7948b569...",
+      "E4": "2bd1ff4e..."
+    },
+    "family_draws": "E4: 75.92/75.44/74.87; E4G1: 74.96; family ~75.3+-0.55"
+  },
+  "measured_platform_noise": {
+    "basis": "identical E2_on_E1 code submitted twice",
+    "score_observations": [
+      76.05,
+      74.86
+    ],
+    "per_point_same_code_deltas_us": {
+      "1": -0.26,
+      "2": 0.68,
+      "3": 10,
+      "4": 0.44,
+      "5": 0.0,
+      "6": 6.32,
+      "7": -5.0,
+      "8": 0.0
+    },
+    "implication": "single-submission score differences below ~1.2 points are within run noise; point 2 alone swings ~0.8 score points per 0.7 us"
+  }
+}

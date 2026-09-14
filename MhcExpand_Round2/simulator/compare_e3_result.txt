@@ -1,0 +1,8 @@
+case               parent_calls   e3v2_calls    delta  e3v2_sclr
+fp16 fwd S1D16M2            268          293    +9.3%        243
+fp16 bwd S1D16M2            657          637    -3.0%        513
+fp16 bwd S1D256M8          1425         1345    -5.6%       1089
+bf16 fwd S1D16M2            n/a          293                 243
+bf16 bwd S1D16M2            n/a          661                 530
+fp16 fwd S3D8208            n/a         1884                1548
+fp16 bwd S3D17M4            n/a         2700                2202

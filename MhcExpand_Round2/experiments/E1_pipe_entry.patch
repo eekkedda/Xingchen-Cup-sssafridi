@@ -1,0 +1,24 @@
+--- a/B_easy/op_kernel/mhc_expand.cpp
++++ b/B_easy/op_kernel/mhc_expand.cpp
+@@
+-    __aicore__ inline KernelMhcExpand() {}
++    __aicore__ inline explicit KernelMhcExpand(AscendC::TPipe *pipe) : pipe_(pipe) {}
+@@
+-            pipe_.InitBuffer(inQueue_, 2, tileElements_ * sizeof(DT_X));
+-            pipe_.InitBuffer(outQueue_, 1, tileElements_ * sizeof(DT_X));
+-            pipe_.InitBuffer(valueFp32Buf_, tileElements_ * sizeof(float));
+-            pipe_.InitBuffer(accFp32Buf_, tileElements_ * sizeof(float));
++            pipe_->InitBuffer(inQueue_, 2, tileElements_ * sizeof(DT_X));
++            pipe_->InitBuffer(outQueue_, 1, tileElements_ * sizeof(DT_X));
++            pipe_->InitBuffer(valueFp32Buf_, tileElements_ * sizeof(float));
++            pipe_->InitBuffer(accFp32Buf_, tileElements_ * sizeof(float));
+@@
+-            pipe_.InitBuffer(forwardBuf_, 2 * tileElements_ * sizeof(DT_X));
++            pipe_->InitBuffer(forwardBuf_, 2 * tileElements_ * sizeof(DT_X));
+@@
+-    AscendC::TPipe pipe_;
++    AscendC::TPipe *pipe_;
+@@
+-    KernelMhcExpand<DT_X> op;
++    AscendC::TPipe pipe;
++    KernelMhcExpand<DT_X> op(&pipe);

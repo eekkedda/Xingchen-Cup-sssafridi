@@ -1,0 +1,192 @@
+==================== run_parent/e1_fwd ====================
+{}
+==================== run_parent/e1_fwd.log ====================
+{}
+==================== run_parent/e2_on_e1_fp16_backward_m8 ====================
+{}
+==================== run_parent/e2_on_e1_fp16_backward_m8.log ====================
+{}
+==================== run_parent/e2_on_e1_fp16_backward_small ====================
+{}
+==================== run_parent/e2_on_e1_fp16_backward_small.log ====================
+{}
+==================== run_parent/p_fp16_backward_m8 ====================
+{
+ "OPPROF_20260914004522_HHCRFPZQUTPYZZGT": {
+  "pipe_calls": {
+   "ALL": 2,
+   "FLOWCTRL": 146,
+   "MTE2": 26,
+   "MTE3": 3,
+   "SCALAR": 1164,
+   "VECTOR": 84
+  },
+  "total_cycles": 30974,
+  "total_instruction_calls": 1425,
+  "wall_duration_us": 2.776
+ }
+}
+==================== run_parent/p_fp16_backward_m8.log ====================
+{}
+==================== run_parent/p_fp16_backward_small ====================
+{
+ "OPPROF_20260914004515_FMCCLBOTIFOBVYQW": {
+  "pipe_calls": {
+   "ALL": 2,
+   "FLOWCTRL": 80,
+   "MTE2": 8,
+   "MTE3": 3,
+   "SCALAR": 534,
+   "VECTOR": 30
+  },
+  "total_cycles": 16208,
+  "total_instruction_calls": 657,
+  "wall_duration_us": 2.286
+ }
+}
+==================== run_parent/p_fp16_backward_small.log ====================
+{}
+==================== run_parent/p_fp16_forward_small ====================
+{
+ "OPPROF_20260914004529_UMZAQDSGISTOULYT": {
+  "pipe_calls": {
+   "ALL": 2,
+   "FLOWCTRL": 30,
+   "MTE2": 4,
+   "MTE3": 3,
+   "SCALAR": 225,
+   "VECTOR": 4
+  },
+  "total_cycles": 9374,
+  "total_instruction_calls": 268,
+  "wall_duration_us": 1.506
+ }
+}
+==================== run_parent/p_fp16_forward_small.log ====================
+{}
+==================== run_e3/e3_bfloat16_backward_small ====================
+{
+ "OPPROF_20260914004959_OCEOGKDZDBZBGAHA": {
+  "pipe_calls": {
+   "ALL": 2,
+   "FLOWCTRL": 85,
+   "MTE2": 8,
+   "MTE3": 3,
+   "SCALAR": 530,
+   "VECTOR": 33
+  },
+  "total_cycles": 15335,
+  "total_instruction_calls": 661,
+  "wall_duration_us": 2.881
+ }
+}
+==================== run_e3/e3_bfloat16_backward_small.log ====================
+{}
+==================== run_e3/e3_bfloat16_forward_small ====================
+{
+ "OPPROF_20260914004953_GVPQOGHNWQPMINIR": {
+  "pipe_calls": {
+   "ALL": 2,
+   "FLOWCTRL": 37,
+   "MTE2": 4,
+   "MTE3": 3,
+   "SCALAR": 243,
+   "VECTOR": 4
+  },
+  "total_cycles": 9910,
+  "total_instruction_calls": 293,
+  "wall_duration_us": 1.773
+ }
+}
+==================== run_e3/e3_bfloat16_forward_small.log ====================
+{}
+==================== run_e3/e3_fp16_backward_d17 ====================
+{
+ "OPPROF_20260914005012_IREBURNQLREVZPBL": {
+  "pipe_calls": {
+   "ALL": 6,
+   "FLOWCTRL": 285,
+   "MTE2": 54,
+   "MTE3": 9,
+   "SCALAR": 2202,
+   "VECTOR": 144
+  },
+  "total_cycles": 50578,
+  "total_instruction_calls": 2700,
+  "wall_duration_us": 2.816
+ }
+}
+==================== run_e3/e3_fp16_backward_d17.log ====================
+{}
+==================== run_e3/e3_fp16_backward_m8 ====================
+{
+ "OPPROF_20260914004947_ILNQCJMRNTFQTPWF": {
+  "pipe_calls": {
+   "ALL": 2,
+   "FLOWCTRL": 141,
+   "MTE2": 26,
+   "MTE3": 3,
+   "SCALAR": 1089,
+   "VECTOR": 84
+  },
+  "total_cycles": 28866,
+  "total_instruction_calls": 1345,
+  "wall_duration_us": 3.28
+ }
+}
+==================== run_e3/e3_fp16_backward_m8.log ====================
+{}
+==================== run_e3/e3_fp16_backward_small ====================
+{
+ "OPPROF_20260914004940_UIDAPMCVADZHCGTQ": {
+  "pipe_calls": {
+   "ALL": 2,
+   "FLOWCTRL": 81,
+   "MTE2": 8,
+   "MTE3": 3,
+   "SCALAR": 513,
+   "VECTOR": 30
+  },
+  "total_cycles": 13247,
+  "total_instruction_calls": 637,
+  "wall_duration_us": 2.638
+ }
+}
+==================== run_e3/e3_fp16_backward_small.log ====================
+{}
+==================== run_e3/e3_fp16_forward_d8208 ====================
+{
+ "OPPROF_20260914005005_ZNCOAGQXWALMDBKG": {
+  "pipe_calls": {
+   "ALL": 12,
+   "FLOWCTRL": 258,
+   "MTE2": 24,
+   "MTE3": 18,
+   "SCALAR": 1548,
+   "VECTOR": 24
+  },
+  "total_cycles": 60550,
+  "total_instruction_calls": 1884,
+  "wall_duration_us": 1.986
+ }
+}
+==================== run_e3/e3_fp16_forward_d8208.log ====================
+{}
+==================== run_e3/e3_fp16_forward_small ====================
+{
+ "OPPROF_20260914004934_OHJESVWWCORJZZIJ": {
+  "pipe_calls": {
+   "ALL": 2,
+   "FLOWCTRL": 37,
+   "MTE2": 4,
+   "MTE3": 3,
+   "SCALAR": 243,
+   "VECTOR": 4
+  },
+  "total_cycles": 9453,
+  "total_instruction_calls": 293,
+  "wall_duration_us": 1.87
+ }
+}
+==================== run_e3/e3_fp16_forward_small.log ====================
+{}

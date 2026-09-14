@@ -1,0 +1,27 @@
+{
+  "experiment_id": "填写实验编号",
+  "parent_commit": null,
+  "candidate_commit": null,
+  "single_hypothesis": null,
+  "changed_mechanism": null,
+  "unchanged_mechanisms": [],
+  "domain_predicate": null,
+  "fallback": null,
+  "build": {
+    "cann_version": "8.5.0",
+    "target": "ascend910b",
+    "binary": "not_run",
+    "install": "not_run",
+    "log_path": null
+  },
+  "validation": {
+    "reference": "not_run",
+    "actual_kernel": "not_run",
+    "judge": "not_submitted",
+    "notes": null
+  },
+  "tiling_trace_path": null,
+  "runs": [],
+  "decision": "pending",
+  "limitations": []
+}

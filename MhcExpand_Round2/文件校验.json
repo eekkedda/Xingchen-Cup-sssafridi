@@ -1,0 +1,16 @@
+{
+  "description": "资料与离线分析包；非比赛算子提交包",
+  "files": {
+    "analyze_results.py": "021704cd6cdb920e3facd7ecd3813cf463f34cabe75ed5069a26810edd4ff101",
+    "test_analyze_results.py": "f324855d9fd31fd6c7b03a70d47769ddca51d0fed80214851096cfa3795d76d3",
+    "使用说明.md": "03b24eb106e06e19ed791e94e9cfd52004f1e137b0b52b7f0784088b8f88a6e6",
+    "历史对比_Baseline至Round6.md": "36f75ceab5a7c1dea4bc601f932a323bb475c54fca3220c99c54319bef63db20",
+    "历史对比_Round5至Round6.md": "b516064d8f96aa2b5f57b2e41d5f2514db6557d15f6bf955b3a436695047a547",
+    "历史跑分.json": "74ed4fce283ba28865c187d23121b562d9dafaba05b7ce459335777cda492763",
+    "实验记录模板.json": "8cb64f57c23581993eb3365d0ff9a1514a45dfb45fcf468cbf21217a0023b5ea",
+    "第二轮优化方案.html": "14d0422627bb2ced82986b3f4024726a92169ff75befbf48e2451d3afae6c69f",
+    "第二轮优化方案.md": "c8a4f8eb97e35e78a48b23f9d1a8055a9e33167dc2ffbc1a91bbcfc15554ae0d",
+    "给CodingAgent的执行指令.md": "601de8f64676282291a45f949063e058c4da3221ad707761e53c3ace888db601",
+    "资料索引.json": "2419187ed3cb3ac6c9749615468ac11c27621af2ee7e79898c31ccd98bcc2862"
+  }
+}
