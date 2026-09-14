@@ -1,6 +1,0 @@
-case                e4_calls   e5_calls   delta%  e4_sclr  e5_sclr
-fp16 fwd S1D16M2         252        252    +0.0%      212      212
-fp16 bwd S1D16M2         637        462   -27.5%      516      374
-fp16 bwd S1D256M8       1387        918   -33.8%     1134      722
-bf16 bwd S1D16M2         n/a        462               n/a      372
-bf16 fwd S1D16M2         n/a        252               n/a      212
